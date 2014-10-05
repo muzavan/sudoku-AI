@@ -8,27 +8,34 @@
 ;;; ====================
 
 (defrule cek-kolom "Mengubah nilai possible-value dari masing-masing kotak, diperiksa secara kolom"
+	(declare (salience 10))
 	(kotak (baris ?baris1) (kolom ?kolom1) (area ?area1) (possible-value ?pos1))
 	?cabut <- (kotak (baris ?baris2&:(<> ?baris1 ?baris2)) (kolom ?kolom1) (area ?area2) (possible-value $?pos11 ?pos1 $?pos12))
 	=>
 	(retract ?cabut)
 	(assert (kotak (baris ?baris2) (kolom ?kolom1) (area ?area2) (possible-value ?pos11 ?pos12)))
+	(printout t "Cek kolom antara " ?baris1 " " ?kolom1 " dan " ?baris2 " " ?kolom1 crlf)
 )
 
 (defrule cek-baris "Mengubah nilai possible-value dari masing-masing kotak, diperiksa secara kolom"
+	(declare (salience 20))
 	(kotak (baris ?baris1) (kolom ?kolom1) (area ?area1) (possible-value ?pos1))
 	?cabut <- (kotak (baris ?baris1) (kolom ?kolom2&:(<> ?kolom1 ?kolom2)) (area ?area2) (possible-value $?pos11 ?pos1 $?pos12))
 	=>
 	(retract ?cabut)
 	(assert (kotak (baris ?baris1) (kolom ?kolom2) (area ?area2) (possible-value ?pos11 ?pos12)))
+	(printout t "Cek baris antara " ?baris1 " " ?kolom1 " dan " ?baris1 " " ?kolom2 crlf)
 )
 
 (defrule cek-area "Mengubah nilai possible-value dari masing-masing kotak, diperiksa secara kolom"
+	(declare (salience 30))
 	(kotak (baris ?baris1) (kolom ?kolom1) (area ?area1) (possible-value ?pos1))
 	?cabut <- (kotak (baris ?baris2) (kolom ?kolom2) (area ?area1) (possible-value $?pos11 ?pos1 $?pos12)) ; Masih Salah
-	=>
+	(test (not (and (eq ?baris1 ?baris2)(eq ?kolom1 ?kolom2))))
+  	=>
 	(retract ?cabut)
 	(assert (kotak (baris ?baris2) (kolom ?kolom2) (area ?area1) (possible-value ?pos11 ?pos12)))
+	(printout t "Cek area antara " ?baris1 " " ?kolom1 " dan " ?baris2 " " ?kolom2 crlf)
 )
 
 (defrule solved "Mengecek apakah sudah menemui nilai yang cocok, dilihat dari banyaknya kemungkinan jumlah value"
